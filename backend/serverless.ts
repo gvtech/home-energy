@@ -4,6 +4,7 @@ import type { AWS } from '@serverless/typescript';
 import dynamoDbTable from 'resources/dynamodb-table';
 
 // Functions
+import createConsumption from './src/functions/createConsumption';
 import hello from './src/functions/hello';
 
 const serverlessConfiguration: AWS = {
@@ -38,6 +39,7 @@ const serverlessConfiguration: AWS = {
     region: 'eu-west-3',
     environment: {
       AWS_STAGE: '${self:custom.stage}',
+      HOME_ENERGY_DYNAMODB_TABLE: '${self:custom.homeEnergyDynamoDbTable}',
     },
     deploymentBucket: {
       name: '${self:service}-${self:custom.envType}-${self:provider.region}-deployment-bucket',
@@ -77,6 +79,7 @@ const serverlessConfiguration: AWS = {
   },
   functions: {
     hello,
+    createConsumption,
   },
   package: {
     // When true optimise lambda performance but increase deployment time

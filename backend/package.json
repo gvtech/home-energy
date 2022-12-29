@@ -11,10 +11,11 @@
     "deploy": "sls deploy --aws-profile home --verbose",
     "undeploy": "sls remove --aws-profile home --verbose",
     "offline": "sls offline start",
-    "test": "jest",
+    "test": "npm run unit && npm run acceptance",
+    "unit": "jest --group=unit --maxWorkers=1",
+    "acceptance": "jest --group=acceptance --maxWorkers=1 --runInBand",
     "openapi": "ts-node openapi/generate-openapi.ts openapi/dist",
     "sdk": "npm run openapi && npx @openapitools/openapi-generator-cli generate -i openapi/dist/openapi.json -g typescript-node -o openapi/dist/api-sdk -c openapi/config.json"
-
   },
   "license": "MIT",
   "dependencies": {
@@ -36,11 +37,13 @@
     "@types/node": "^18.7.20",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
+    "aws-sdk-mock": "^5.8.0",
     "esbuild": "^0.15.9",
     "esbuild-jest": "^0.5.0",
     "eslint": "^8.24.0",
     "jest": "^29.3.1",
     "jest-junit": "^15.0.0",
+    "jest-runner-groups": "^2.2.0",
     "json-schema-to-ts": "^2.5.5",
     "nodemon": "^2.0.20",
     "serverless": "^3.22.0",
