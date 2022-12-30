@@ -1,5 +1,22 @@
-export type Consumption = {
+import { EDeviceType } from './device.model';
+
+export type ConsumptionDao = {
+  PK: string;
+  SK: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deviceType: EDeviceType;
+
   date: string;
-  consumption: string;
+  consumption: number[];
+  deviceNumber: number;
+  details: object[];
+};
+
+export type ConsumptionDto = {
+  date: string;
+  consumption: number[];
+  deviceNumber: number;
   details: object[];
 };

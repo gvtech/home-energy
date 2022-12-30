@@ -1,5 +1,5 @@
 {
-  "name": "sls-express",
+  "name": "home-energy-backend",
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
@@ -15,7 +15,9 @@
     "unit": "jest --group=unit --maxWorkers=1",
     "acceptance": "jest --group=acceptance --maxWorkers=1 --runInBand",
     "openapi": "ts-node openapi/generate-openapi.ts openapi/dist",
-    "sdk": "npm run openapi && npx @openapitools/openapi-generator-cli generate -i openapi/dist/openapi.json -g typescript-node -o openapi/dist/api-sdk -c openapi/config.json"
+    "sdk": "npm run openapi && npx @openapitools/openapi-generator-cli generate -i openapi/dist/openapi.json -g typescript-node -o openapi/dist/api-sdk -c openapi/config.json",
+    "db": "sls dynamodb start",
+    "install:db": "sls dynamodb install"
   },
   "license": "MIT",
   "dependencies": {
@@ -48,8 +50,8 @@
     "nodemon": "^2.0.20",
     "serverless": "^3.22.0",
     "serverless-deployment-bucket": "^1.6.0",
+    "serverless-dynamodb-local": "^0.2.40",
     "serverless-esbuild": "^1.33.0",
-    "serverless-offline": "^10.2.1",
     "serverless-plugin-typescript": "^2.1.2",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",

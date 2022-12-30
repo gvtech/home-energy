@@ -1,21 +1,35 @@
 import { dynamoDBClient, HOME_ENERGY_TABLE } from '@libs/adapter/db-connect';
-import { IDynamoDbConsumption } from '@libs/adapter/dynamodb';
-import { Consumption } from '@models/consumption.model';
+import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
+import { logger } from '@libs/utils/logger';
+import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
+import { getDeviceTypeByDeviceNumber } from '@models/device.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+global.crypto = require('crypto');
 
 export class ConsumptionService implements IDynamoDbConsumption {
-  async createConsumptionForAnHour(consumption: Consumption): Promise<DocumentClient.PutItemOutput> {
-    const timestamp = new Date().getTime();
+  async createConsumptionForAnHour(consumption: ConsumptionDto): Promise<DocumentClient.PutItemOutput> {
     const parameters: DocumentClient.PutItemInput = {
       TableName: HOME_ENERGY_TABLE,
-      Item: {
-        id: crypto.randomUUID(),
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        ...consumption,
-      },
+      Item: this.buildConsumptionDao(consumption),
     };
 
-    return await dynamoDBClient().put(parameters).promise();
+    const response = await dynamoDBClient().put(parameters).promise();
+    logger.info({ response }, 'consumption created');
+    return response;
+  }
+
+  private buildConsumptionDao(consumption: ConsumptionDto): ConsumptionDao {
+    const timestamp = new Date().toISOString();
+    const uuid = crypto.randomUUID();
+    const deviceType = getDeviceTypeByDeviceNumber(consumption.deviceNumber);
+    return {
+      PK: `CONSUMPTION#${uuid}`,
+      SK: `CONSUMPTION#${deviceType}`,
+      id: uuid,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      deviceType,
+      ...consumption,
+    };
   }
 }

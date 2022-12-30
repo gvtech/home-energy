@@ -1,8 +1,8 @@
-import type { APIGatewayProxyResult } from 'aws-lambda';
-import { HttpError } from 'http-errors';
-import { StatusCodes } from 'http-status-codes';
 import { Errors } from '@libs/utils/errors';
 import { logger } from '@libs/utils/logger';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { HttpError } from 'http-errors';
+import { StatusCodes } from 'http-status-codes';
 
 export type JsonResponse<T> = {
   message: string;
@@ -22,6 +22,10 @@ export const getDataFromJSONResponse = <T>(response: APIGatewayProxyResult): T =
 
 export const getMessageFromJSONResponse = (response: APIGatewayProxyResult): string => {
   return JSON.parse(response.body).message;
+};
+
+export const getBodyFromAPIGatewayProxyEvent = <T>(event: Partial<APIGatewayProxyEvent>): T | undefined => {
+  return event?.body ? JSON.parse(event?.body) : undefined;
 };
 
 export const catchAWSHttpError = <T>(error: HttpError, data: T): APIGatewayProxyResult => {

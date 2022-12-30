@@ -4,3 +4,4 @@ dist
 .serverless
 junit.xml
 openapitools.json
+.dynamodb

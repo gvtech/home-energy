@@ -18,7 +18,7 @@ const serverlessConfiguration: AWS = {
     hostedZoneName: '${env:HOSTED_ZONE, "${self:custom.envType}.typescript.hostedZone"}',
     apiDomainName: 'api.${self:custom.hostedZoneName}',
     apiBasePath: 'api-${self:custom.stage}-${self:service}',
-    homeEnergyDynamoDbTable: '${self:provider.stage}-${self:service}-home-energy-dynamodb-table',
+    homeEnergyDynamoDbTable: '${self:provider.stage}-home-energy-dynamodb-table',
     esbuild: {
       bundle: true,
       minify: false,
@@ -30,8 +30,15 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
       loader: { '.html': 'text' },
     },
+    dynamodb: {
+      stages: ['${self:custom.stage}'],
+      start: {
+        migrate: true,
+        port: 8000,
+      },
+    },
   },
-  plugins: ['serverless-esbuild', 'serverless-deployment-bucket', 'serverless-offline'],
+  plugins: ['serverless-esbuild', 'serverless-deployment-bucket', 'serverless-dynamodb-local'],
   provider: {
     name: 'aws',
     runtime: 'nodejs16.x',
