@@ -8,14 +8,14 @@ export type ConsumptionDao = {
   updatedAt: string;
   deviceType: EDeviceType;
 
-  date: string;
+  consumptionDate: string;
   consumption: number[];
   deviceNumber: number;
   details: object[];
 };
 
 export type ConsumptionDto = {
-  date: string;
+  consumptionDate: string;
   consumption: number[];
   deviceNumber: number;
   details: object[];

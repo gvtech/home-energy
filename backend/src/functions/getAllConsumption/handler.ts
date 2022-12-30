@@ -6,13 +6,15 @@ import { catchAWSHttpError, formatJSONResponse } from '@libs/adapter/aws/api-gat
 import { ConsumptionService } from '@libs/services/consumption';
 import { HttpError } from 'http-errors';
 
-export const main = async (_event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
+export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
   try {
-    const response = await new ConsumptionService().getAllConsumptionByDate();
+    const startDate = event.pathParameters?.startDate;
+    const endDate = event.pathParameters?.endDate;
+    const response = await new ConsumptionService().getAllConsumptionByDate(startDate, endDate);
 
     return formatJSONResponse<DocumentClient.QueryOutput>(
       {
-        message: 'createConsumptionForAnHour',
+        message: 'getAllConsumptionByDate',
         data: response,
       },
       StatusCodes.OK,

@@ -3,7 +3,8 @@
     "Content-Type": "application/json"
   },
   "pathParameters": {
-    "id": "ad8573e0-03bd-11ed-9fee-eb1f9d47deb1"
+    "startDate": "2022-12-30T18:29:28.225Z",
+    "endDate": "2022-12-30T20:29:28.225Z"
   },
   "body": "{}"
 }

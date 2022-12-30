@@ -2,7 +2,7 @@ import { dynamoDBClient, HOME_ENERGY_TABLE } from '@libs/adapter/db-connect';
 import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
 import { logger } from '@libs/utils/logger';
 import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
-import { EDeviceType, getDeviceTypeByDeviceNumber } from '@models/device.model';
+import { getDeviceTypeByDeviceNumber } from '@models/device.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 global.crypto = require('crypto');
 
@@ -18,17 +18,17 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
-  async getAllConsumptionByDate(): Promise<DocumentClient.QueryOutput> {
+  async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<DocumentClient.QueryOutput> {
     const parameters: DocumentClient.QueryInput = {
       TableName: HOME_ENERGY_TABLE,
-      KeyConditionExpression: 'PK = :PK and SK = :SK',
+      FilterExpression: 'consumptionDate BETWEEN :startDate and :endDate',
       ExpressionAttributeValues: {
-        ':PK': `CONSUMPTION#`,
-        ':SK': `CONSUMPTION#${EDeviceType.OVEN}`,
+        ':startDate': startDate,
+        ':endDate': endDate,
       },
     };
 
-    const response = await dynamoDBClient().query(parameters).promise();
+    const response = await dynamoDBClient().scan(parameters).promise();
     logger.info({ response }, 'getAll consumption');
     return response;
   }
