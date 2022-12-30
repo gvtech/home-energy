@@ -4,6 +4,7 @@ import type { AWS } from '@serverless/typescript';
 import dynamoDbTable from 'resources/dynamodb-table';
 
 // Functions
+import createConsumption from './src/functions/createConsumption';
 import hello from './src/functions/hello';
 
 const serverlessConfiguration: AWS = {
@@ -17,7 +18,7 @@ const serverlessConfiguration: AWS = {
     hostedZoneName: '${env:HOSTED_ZONE, "${self:custom.envType}.typescript.hostedZone"}',
     apiDomainName: 'api.${self:custom.hostedZoneName}',
     apiBasePath: 'api-${self:custom.stage}-${self:service}',
-    homeEnergyDynamoDbTable: '${self:provider.stage}-${self:service}-home-energy-dynamodb-table',
+    homeEnergyDynamoDbTable: '${self:provider.stage}-home-energy-dynamodb-table',
     esbuild: {
       bundle: true,
       minify: false,
@@ -29,8 +30,15 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
       loader: { '.html': 'text' },
     },
+    dynamodb: {
+      stages: ['${self:custom.stage}'],
+      start: {
+        migrate: true,
+        port: 8000,
+      },
+    },
   },
-  plugins: ['serverless-esbuild', 'serverless-deployment-bucket', 'serverless-offline'],
+  plugins: ['serverless-esbuild', 'serverless-deployment-bucket', 'serverless-dynamodb-local'],
   provider: {
     name: 'aws',
     runtime: 'nodejs16.x',
@@ -38,6 +46,7 @@ const serverlessConfiguration: AWS = {
     region: 'eu-west-3',
     environment: {
       AWS_STAGE: '${self:custom.stage}',
+      HOME_ENERGY_DYNAMODB_TABLE: '${self:custom.homeEnergyDynamoDbTable}',
     },
     deploymentBucket: {
       name: '${self:service}-${self:custom.envType}-${self:provider.region}-deployment-bucket',
@@ -77,6 +86,7 @@ const serverlessConfiguration: AWS = {
   },
   functions: {
     hello,
+    createConsumption,
   },
   package: {
     // When true optimise lambda performance but increase deployment time

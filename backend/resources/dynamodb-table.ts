@@ -4,93 +4,45 @@ export default {
     Properties: {
       TableName: '${self:custom.homeEnergyDynamoDbTable}',
       AttributeDefinitions: [
-        {
-          AttributeName: 'pk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'sk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs1pk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs1sk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs2pk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs2sk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs3pk',
-          AttributeType: 'S',
-        },
-        {
-          AttributeName: 'gs3sk',
-          AttributeType: 'S',
-        },
+        { AttributeName: 'PK', AttributeType: 'S' },
+        { AttributeName: 'SK', AttributeType: 'S' },
+        { AttributeName: 'GSI1PK', AttributeType: 'S' },
+        { AttributeName: 'GSI1SK', AttributeType: 'S' },
+        { AttributeName: 'GSI2PK', AttributeType: 'S' },
+        { AttributeName: 'GSI2SK', AttributeType: 'S' },
+        { AttributeName: 'GSI3PK', AttributeType: 'S' },
+        { AttributeName: 'GSI3SK', AttributeType: 'S' },
       ],
       KeySchema: [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
-        },
-        {
-          AttributeName: 'sk',
-          KeyType: 'RANGE',
-        },
+        { AttributeName: 'PK', KeyType: 'HASH' },
+        { AttributeName: 'SK', KeyType: 'RANGE' },
       ],
       GlobalSecondaryIndexes: [
         {
-          IndexName: 'gs1',
+          IndexName: 'GSI1',
           KeySchema: [
-            {
-              AttributeName: 'gs1pk',
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: 'gs1sk',
-              KeyType: 'RANGE',
-            },
+            { AttributeName: 'GSI1PK', KeyType: 'HASH' },
+            { AttributeName: 'GSI1SK', KeyType: 'RANGE' },
           ],
           Projection: {
             ProjectionType: 'ALL',
           },
         },
         {
-          IndexName: 'gs2',
+          IndexName: 'GSI2',
           KeySchema: [
-            {
-              AttributeName: 'gs2pk',
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: 'gs2sk',
-              KeyType: 'RANGE',
-            },
+            { AttributeName: 'GSI2PK', KeyType: 'HASH' },
+            { AttributeName: 'GSI2SK', KeyType: 'RANGE' },
           ],
           Projection: {
             ProjectionType: 'ALL',
           },
         },
         {
-          IndexName: 'gs3',
+          IndexName: 'GSI3',
           KeySchema: [
-            {
-              AttributeName: 'gs3pk',
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: 'gs3sk',
-              KeyType: 'RANGE',
-            },
+            { AttributeName: 'GSI3PK', KeyType: 'HASH' },
+            { AttributeName: 'GSI3SK', KeyType: 'RANGE' },
           ],
           Projection: {
             ProjectionType: 'ALL',
@@ -98,6 +50,6 @@ export default {
         },
       ],
       BillingMode: 'PAY_PER_REQUEST',
-    },
+    }
   },
 };

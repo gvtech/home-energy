@@ -1,3 +1,6 @@
+/**
+ * @group unit
+ */
 import { describe, expect, test } from '@jest/globals';
 import { StatusCodes } from 'http-status-codes';
 import { Errors } from '@libs/utils/errors';
