@@ -2,7 +2,7 @@ import { dynamoDBClient, HOME_ENERGY_TABLE } from '@libs/adapter/db-connect';
 import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
 import { logger } from '@libs/utils/logger';
 import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
-import { getDeviceTypeByDeviceNumber } from '@models/device.model';
+import { EDeviceType, getDeviceTypeByDeviceNumber } from '@models/device.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 global.crypto = require('crypto');
 
@@ -18,12 +18,27 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
+  async getAllConsumptionByDate(): Promise<DocumentClient.QueryOutput> {
+    const parameters: DocumentClient.QueryInput = {
+      TableName: HOME_ENERGY_TABLE,
+      KeyConditionExpression: 'PK = :PK and SK = :SK',
+      ExpressionAttributeValues: {
+        ':PK': `CONSUMPTION#`,
+        ':SK': `CONSUMPTION#${EDeviceType.OVEN}`,
+      },
+    };
+
+    const response = await dynamoDBClient().query(parameters).promise();
+    logger.info({ response }, 'getAll consumption');
+    return response;
+  }
+
   private buildConsumptionDao(consumption: ConsumptionDto): ConsumptionDao {
     const timestamp = new Date().toISOString();
     const uuid = crypto.randomUUID();
     const deviceType = getDeviceTypeByDeviceNumber(consumption.deviceNumber);
     return {
-      PK: `CONSUMPTION#${uuid}`,
+      PK: `CONSUMPTION#`,
       SK: `CONSUMPTION#${deviceType}`,
       id: uuid,
       createdAt: timestamp,

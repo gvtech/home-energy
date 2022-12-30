@@ -31,6 +31,6 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
       StatusCodes.OK,
     );
   } catch (error) {
-    return catchAWSHttpError<string>(error as HttpError, '');
+    return catchAWSHttpError<DocumentClient.PutItemOutput>(error as HttpError, {});
   }
 };

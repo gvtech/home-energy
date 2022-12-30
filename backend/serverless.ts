@@ -5,6 +5,7 @@ import dynamoDbTable from 'resources/dynamodb-table';
 
 // Functions
 import createConsumption from './src/functions/createConsumption';
+import getAllConsumption from './src/functions/getAllConsumption';
 import hello from './src/functions/hello';
 
 const serverlessConfiguration: AWS = {
@@ -87,6 +88,7 @@ const serverlessConfiguration: AWS = {
   functions: {
     hello,
     createConsumption,
+    getAllConsumption,
   },
   package: {
     // When true optimise lambda performance but increase deployment time
