@@ -2,7 +2,7 @@
   "headers": {
     "Content-Type": "application/json"
   },
-  "pathParameters": {
+  "queryStringParameters": {
     "startDate": "2022-12-30T18:29:28.225Z",
     "endDate": "2022-12-30T20:29:28.225Z"
   },

@@ -18,10 +18,27 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
-  async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<DocumentClient.QueryOutput> {
+  // TODO: fix SK and by device query
+  async getAllConsumptionByDevice(deviceNumber: number) {
+    const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
     const parameters: DocumentClient.QueryInput = {
       TableName: HOME_ENERGY_TABLE,
-      FilterExpression: 'consumptionDate BETWEEN :startDate and :endDate',
+      KeyConditionExpression: 'begins_with(PK, :PK) AND SK = :SK',
+      ExpressionAttributeValues: {
+        ':PK': `CONSUMPTION#`,
+        ':SK': `CONSUMPTION#${deviceType}`,
+      },
+    };
+
+    const response = await dynamoDBClient().query(parameters).promise();
+    logger.info({ response }, 'getAll consumption');
+    return (response.Items ?? []) as ConsumptionDao[];
+  }
+
+  async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
+    const parameters: DocumentClient.ScanInput = {
+      TableName: HOME_ENERGY_TABLE,
+      FilterExpression: this.getConsumptionByDateFilterExpression(startDate, endDate),
       ExpressionAttributeValues: {
         ':startDate': startDate,
         ':endDate': endDate,
@@ -30,7 +47,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
     const response = await dynamoDBClient().scan(parameters).promise();
     logger.info({ response }, 'getAll consumption');
-    return response;
+    return (response.Items ?? []) as ConsumptionDao[];
   }
 
   private buildConsumptionDao(consumption: ConsumptionDto): ConsumptionDao {
@@ -38,7 +55,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
     const uuid = crypto.randomUUID();
     const deviceType = getDeviceTypeByDeviceNumber(consumption.deviceNumber);
     return {
-      PK: `CONSUMPTION#`,
+      PK: `CONSUMPTION#${uuid}`,
       SK: `CONSUMPTION#${deviceType}`,
       id: uuid,
       createdAt: timestamp,
@@ -46,5 +63,16 @@ export class ConsumptionService implements IDynamoDbConsumption {
       deviceType,
       ...consumption,
     };
+  }
+
+  private getConsumptionByDateFilterExpression(startDate: string | undefined, endDate: string | undefined): string {
+    if (startDate && endDate) {
+      return 'consumptionDate BETWEEN :startDate and :endDate';
+    } else if (startDate) {
+      return 'consumptionDate > :startDate';
+    } else if (endDate) {
+      return 'consumptionDate < :endDate';
+    }
+    return '';
   }
 }
