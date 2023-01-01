@@ -6,7 +6,6 @@ import dynamoDbTable from 'resources/dynamodb-table';
 // Functions
 import createConsumption from './src/functions/createConsumption';
 import getAllConsumption from './src/functions/getAllConsumption';
-import hello from './src/functions/hello';
 
 const serverlessConfiguration: AWS = {
   service: 'home-energy-backend',
@@ -86,7 +85,6 @@ const serverlessConfiguration: AWS = {
     },
   },
   functions: {
-    hello,
     createConsumption,
     getAllConsumption,
   },

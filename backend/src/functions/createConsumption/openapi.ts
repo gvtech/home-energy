@@ -2,6 +2,7 @@ import { getHttpRoute } from '@libs/adapter/api-gateway';
 import { Platforms } from '@models/adapter.model';
 import { Routes } from 'src/routes';
 
+// TODO: add openapi
 export default {
   paths: {
     [getHttpRoute(Platforms.AWS, Routes.HELLO)]: {
