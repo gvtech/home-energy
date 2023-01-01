@@ -11,11 +11,11 @@ import createHttpError, { HttpError } from 'http-errors';
 export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
   try {
     const body = getBodyFromAPIGatewayProxyEvent<ConsumptionDto>(event);
-    const date = body?.date;
+    const consumptionDate = body?.consumptionDate;
     const consumption = body?.consumption;
     const deviceNumber = body?.deviceNumber;
     const details = body?.details;
-    if (!date) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DATE_NOT_PROVIDED);
+    if (!consumptionDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.CONSUMPTION_DATE_NOT_PROVIDED);
     if (!consumption) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.CONSUMPTION_NOT_PROVIDED);
     if (deviceNumber === undefined && deviceNumber === null)
       throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DEVICE_NUMBER_NOT_PROVIDED);
@@ -31,6 +31,6 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
       StatusCodes.OK,
     );
   } catch (error) {
-    return catchAWSHttpError<string>(error as HttpError, '');
+    return catchAWSHttpError<DocumentClient.PutItemOutput>(error as HttpError, {});
   }
 };

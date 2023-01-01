@@ -2,5 +2,5 @@
   "headers": {
     "Content-Type": "application/json"
   },
-  "body": "{\"date\": \"Blastec\", \"deviceNumber\": 1, \"consumption\": [1,2,3,4], \"details\": []}"
+  "body": "{\"consumptionDate\": \"2022-12-30T19:29:28.225Z\", \"deviceNumber\": 2, \"consumption\": [1,2,3,4], \"details\": []}"
 }

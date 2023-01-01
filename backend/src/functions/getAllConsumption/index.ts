@@ -10,7 +10,7 @@ export default {
     {
       http: {
         method: 'get',
-        path: getHttpRoute(Platforms.AWS, Routes.HELLO),
+        path: getHttpRoute(Platforms.AWS, Routes.GET_ALL_CONSUMPTION),
       },
     },
   ],
