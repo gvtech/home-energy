@@ -19,7 +19,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
   }
 
   // TODO: fix SK and by device query
-  async getAllConsumptionByDevice(deviceNumber: number) {
+  async getAllConsumptionByDevice(deviceNumber: number): Promise<ConsumptionDao[]> {
     const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
     const parameters: DocumentClient.QueryInput = {
       TableName: HOME_ENERGY_TABLE,
