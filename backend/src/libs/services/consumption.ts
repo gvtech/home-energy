@@ -32,7 +32,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
     const response = await dynamoDBClient().query(parameters).promise();
     logger.info({ response }, 'getAll consumption');
-    return (response.Items ?? []) as ConsumptionDao[];
+    return (response?.Items ?? []) as ConsumptionDao[];
   }
 
   async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
@@ -47,7 +47,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
     const response = await dynamoDBClient().scan(parameters).promise();
     logger.info({ response }, 'getAll consumption');
-    return (response.Items ?? []) as ConsumptionDao[];
+    return (response?.Items ?? []) as ConsumptionDao[];
   }
 
   private buildConsumptionDao(consumption: ConsumptionDto): ConsumptionDao {

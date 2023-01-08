@@ -1,12 +1,12 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { StatusCodes } from 'http-status-codes';
 
 import { catchAWSHttpError, formatJSONResponse } from '@libs/adapter/aws/api-gateway';
 import { ConsumptionService } from '@libs/services/consumption';
+import { Errors } from '@libs/utils/errors';
 import { ConsumptionDao } from '@models/consumption.model';
 import createHttpError, { HttpError } from 'http-errors';
-import { Errors } from '@libs/utils/errors';
+import { logger } from '@libs/utils/logger';
 
 export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
   try {
@@ -14,6 +14,8 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
     const startDate = event.queryStringParameters?.startDate;
     const endDate = event.queryStringParameters?.endDate;
     if (!deviceNumber && !startDate && !endDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.PARAMETERS_NOT_PROVIDED);
+
+    logger.info({ deviceNumber, startDate, endDate }, 'getAllConsumption queryStringParameters');
 
     // TODO: fix SK and by device query
     let consumptionByDevice: ConsumptionDao[] = [];
