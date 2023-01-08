@@ -21,7 +21,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
   async createAllConsumptionForAnHour(consumptions: ConsumptionDto[]): Promise<DocumentClient.BatchWriteItemOutput | Errors> {
     if (consumptions) {
-      const parameters = {
+      const parameters: DocumentClient.BatchWriteItemInput = {
         RequestItems: {
           [HOME_ENERGY_TABLE]: this.buildBatchWriteConsumptions(consumptions),
         },
@@ -81,8 +81,8 @@ export class ConsumptionService implements IDynamoDbConsumption {
     };
   }
 
-  private buildBatchWriteConsumptions(consumptions: ConsumptionDto[]): any {
-    const items = [];
+  private buildBatchWriteConsumptions(consumptions: ConsumptionDto[]): DocumentClient.WriteRequest[] {
+    const items: DocumentClient.WriteRequest[] = [];
     for (const consumption of consumptions) {
       items.push({
         PutRequest: {
