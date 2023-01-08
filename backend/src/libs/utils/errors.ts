@@ -5,4 +5,5 @@ export enum Errors {
   DEVICE_NUMBER_NOT_PROVIDED = 'DeviceNumberNotProvided',
   DETAILS_NOT_PROVIDED = 'DetailsNotProvided',
   PARAMETERS_NOT_PROVIDED = 'ParametersNotProvided',
+  EMPTY_CONSUMPTIONS_LIST = 'EmptyConsumptionsList',
 }

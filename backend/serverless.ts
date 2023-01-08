@@ -4,6 +4,7 @@ import type { AWS } from '@serverless/typescript';
 import dynamoDbTable from 'resources/dynamodb-table';
 
 // Functions
+import createAllConsumption from './src/functions/createAllConsumption';
 import createConsumption from './src/functions/createConsumption';
 import getAllConsumption from './src/functions/getAllConsumption';
 
@@ -85,6 +86,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   functions: {
+    createAllConsumption,
     createConsumption,
     getAllConsumption,
   },

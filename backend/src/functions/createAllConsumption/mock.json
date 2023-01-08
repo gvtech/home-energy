@@ -1,0 +1,6 @@
+{
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "[{\"consumptionDate\":\"2023-01-08T18:24:52.107Z\",\"consumption\":[12,52,89,4654],\"deviceNumber\":1,\"details\":[]},{\"consumptionDate\":\"2023-01-08T18:24:52.107Z\",\"consumption\":[12,52,89,4654],\"deviceNumber\":1,\"details\":[]}]"
+}
