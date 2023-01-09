@@ -25,7 +25,14 @@ export const getMessageFromJSONResponse = (response: APIGatewayProxyResult): str
 };
 
 export const getBodyFromAPIGatewayProxyEvent = <T>(event: Partial<APIGatewayProxyEvent>): T | undefined => {
-  return event?.body ? JSON.parse(event?.body) : undefined;
+  try {
+    if (event?.body) {
+      return JSON.parse(event?.body);
+    }
+  } catch {
+    logger.error(event?.body);
+  }
+  return undefined;
 };
 
 export const catchAWSHttpError = <T>(error: HttpError, data: T): APIGatewayProxyResult => {

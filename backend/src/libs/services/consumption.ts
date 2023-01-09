@@ -1,5 +1,6 @@
 import { dynamoDBClient, HOME_ENERGY_TABLE } from '@libs/adapter/db-connect';
 import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
+import { Errors } from '@libs/utils/errors';
 import { logger } from '@libs/utils/logger';
 import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
 import { getDeviceTypeByDeviceNumber } from '@models/device.model';
@@ -18,8 +19,23 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
+  async createAllConsumptionForAnHour(consumptions: ConsumptionDto[]): Promise<DocumentClient.BatchWriteItemOutput | Errors> {
+    if (consumptions) {
+      const parameters: DocumentClient.BatchWriteItemInput = {
+        RequestItems: {
+          [HOME_ENERGY_TABLE]: this.buildBatchWriteConsumptions(consumptions),
+        },
+      };
+
+      const response = await dynamoDBClient().batchWrite(parameters).promise();
+      logger.info({ response }, 'consumptions created');
+      return response;
+    }
+    return Errors.EMPTY_CONSUMPTIONS_LIST;
+  }
+
   // TODO: fix SK and by device query
-  async getAllConsumptionByDevice(deviceNumber: number) {
+  async getAllConsumptionByDevice(deviceNumber: number): Promise<ConsumptionDao[]> {
     const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
     const parameters: DocumentClient.QueryInput = {
       TableName: HOME_ENERGY_TABLE,
@@ -32,7 +48,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
     const response = await dynamoDBClient().query(parameters).promise();
     logger.info({ response }, 'getAll consumption');
-    return (response.Items ?? []) as ConsumptionDao[];
+    return (response?.Items ?? []) as ConsumptionDao[];
   }
 
   async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
@@ -47,7 +63,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
     const response = await dynamoDBClient().scan(parameters).promise();
     logger.info({ response }, 'getAll consumption');
-    return (response.Items ?? []) as ConsumptionDao[];
+    return (response?.Items ?? []) as ConsumptionDao[];
   }
 
   private buildConsumptionDao(consumption: ConsumptionDto): ConsumptionDao {
@@ -63,6 +79,18 @@ export class ConsumptionService implements IDynamoDbConsumption {
       deviceType,
       ...consumption,
     };
+  }
+
+  private buildBatchWriteConsumptions(consumptions: ConsumptionDto[]): DocumentClient.WriteRequest[] {
+    const items: DocumentClient.WriteRequest[] = [];
+    for (const consumption of consumptions) {
+      items.push({
+        PutRequest: {
+          Item: this.buildConsumptionDao(consumption),
+        },
+      });
+    }
+    return items;
   }
 
   private getConsumptionByDateFilterExpression(startDate: string | undefined, endDate: string | undefined): string {

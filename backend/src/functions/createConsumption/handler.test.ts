@@ -26,11 +26,11 @@ describe('createConsumption unit', () => {
 
   test('Should create a consumption', async () => {
     // Given
-    const consomption = generateFakeConsomption();
+    const consumption = generateFakeConsomption();
 
     // When
     const event = generateValidatedAPIGatewayProxyEvent({
-      body: JSON.stringify(consomption),
+      body: JSON.stringify(consumption),
     });
     const response = await executeLambda(main, event);
 
@@ -38,7 +38,7 @@ describe('createConsumption unit', () => {
     expect(response.statusCode).toEqual(StatusCodes.OK);
     expect(dynamoDb.put.mock.calls[0][0]).toEqual({
       Item: {
-        ...consomption,
+        ...consumption,
         PK: expect.any(String),
         SK: expect.any(String),
         createdAt: expect.any(String),

@@ -7,6 +7,7 @@ import { catchAWSHttpError, formatJSONResponse, getBodyFromAPIGatewayProxyEvent 
 import { ConsumptionService } from '@libs/services/consumption';
 import { ConsumptionDto } from '@models/consumption.model';
 import createHttpError, { HttpError } from 'http-errors';
+import { logger } from '@libs/utils/logger';
 
 export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
   try {
@@ -20,6 +21,8 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
     if (deviceNumber === undefined && deviceNumber === null)
       throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DEVICE_NUMBER_NOT_PROVIDED);
     if (!details) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DETAILS_NOT_PROVIDED);
+
+    logger.info({ body }, 'createConsumption body');
 
     const response = await new ConsumptionService().createConsumptionForAnHour(body);
 
