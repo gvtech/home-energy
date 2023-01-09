@@ -9,22 +9,22 @@ export type JsonResponse<T> = {
   data: T;
 };
 
-export const formatJSONResponse = <T>(response: JsonResponse<T>, statusCode: StatusCodes): APIGatewayProxyResult => {
+export function formatJSONResponse<T>(response: JsonResponse<T>, statusCode: StatusCodes): APIGatewayProxyResult {
   return {
     statusCode,
     body: JSON.stringify(response),
   };
-};
+}
 
-export const getDataFromJSONResponse = <T>(response: APIGatewayProxyResult): T => {
+export function getDataFromJSONResponse<T>(response: APIGatewayProxyResult): T {
   return JSON.parse(response.body).data;
-};
+}
 
-export const getMessageFromJSONResponse = (response: APIGatewayProxyResult): string => {
+export function getMessageFromJSONResponse(response: APIGatewayProxyResult): string {
   return JSON.parse(response.body).message;
-};
+}
 
-export const getBodyFromAPIGatewayProxyEvent = <T>(event: Partial<APIGatewayProxyEvent>): T | undefined => {
+export function getBodyFromAPIGatewayProxyEvent<T>(event: Partial<APIGatewayProxyEvent>): T | undefined {
   try {
     if (event?.body) {
       return JSON.parse(event?.body);
@@ -33,9 +33,9 @@ export const getBodyFromAPIGatewayProxyEvent = <T>(event: Partial<APIGatewayProx
     logger.error(event?.body);
   }
   return undefined;
-};
+}
 
-export const catchAWSHttpError = <T>(error: HttpError, data: T): APIGatewayProxyResult => {
+export function catchAWSHttpError<T>(error: HttpError, data: T): APIGatewayProxyResult {
   logger.error(error);
   return formatJSONResponse<T>(
     {
@@ -44,4 +44,4 @@ export const catchAWSHttpError = <T>(error: HttpError, data: T): APIGatewayProxy
     },
     error?.statusCode ?? StatusCodes.CONFLICT,
   );
-};
+}
