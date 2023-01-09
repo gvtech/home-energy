@@ -23,6 +23,7 @@ String lastRun="";
 void setup() {
 
   Serial.begin(115200);
+  Serial.setTimeout(1000);
   WiFi.mode(WIFI_STA);
   WiFiMulti.addAP(WIFI_SSID, WIFI_PSW);
 
@@ -48,26 +49,32 @@ void sendConsumption(BearSSL::WiFiClientSecure *client) {
     HTTPClient https;
 
     int retry=0;
+    int nbLines=0;
+    String dataBuffer="[";
     while(true) {
-      if (Serial.available() > 0) {
+      if (Serial.available() > 3) {
           String consumptionData=Serial.readStringUntil('\n');
-          if(consumptionData.equals("done")){
-           break;
+          if(consumptionData.startsWith("done")){
+            break;
+            }
+          else {
+            if(nbLines) dataBuffer+=",";
+            nbLines++;
+            dataBuffer+=consumptionData;
           }
-          else if (https.begin(*client, BACKEND_URL)) { 
-          https.addHeader("Content-Type", "application/json");
-          int httpCode = https.POST(consumptionData);
-          https.end();
-        }
+         }
       else {
           retry+=1;
-          if(retry>10) {
-            break;
+          if(retry>10)  break;
+          delay(200); 
         }
-        delay(1000); 
-       }
       }
-    }
+    dataBuffer+="]";
+    if (https.begin(*client, BACKEND_URL)) { 
+            https.addHeader("Content-Type", "application/json");
+            int httpCode = https.POST(dataBuffer);
+            https.end();
+            }
 }
 
 void loop() {
@@ -80,5 +87,5 @@ void loop() {
       sendConsumption(client);
     }
   }
-  delay(10000);
+  delay(60000);
 }

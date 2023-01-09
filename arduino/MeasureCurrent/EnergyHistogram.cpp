@@ -2,10 +2,8 @@
 #include <Arduino.h>
 #include "EnergyHistogram.h"
 
-EnergyHistogram::EnergyHistogram(int device) {
-  _device = device;
-  reset();
-}
+EnergyHistogram::EnergyHistogram() {}
+
 
 void EnergyHistogram::reset() {
   _lastCheckTime=millis();
@@ -15,7 +13,7 @@ void EnergyHistogram::reset() {
   }
 
 }
-void EnergyHistogram::addMeasure(double power) {
+void EnergyHistogram::addMeasure(float power) {
   int bucket= power / 1000;
   if(bucket>=HISTOGRAM_LENGTH) {
     bucket=HISTOGRAM_LENGTH-1;
@@ -34,6 +32,6 @@ long EnergyHistogram::getDuration(int bucket) {
   return _duration[bucket]/1000; // convert into seconds
 }
 
-double EnergyHistogram::getConsumption(int bucket) {
+float EnergyHistogram::getConsumption(int bucket) {
   return _histogram[bucket];
 }

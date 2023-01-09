@@ -3,14 +3,13 @@
 #define HISTOGRAM_LENGTH 5
 class EnergyHistogram {
   public:
-    EnergyHistogram(int device);
+    EnergyHistogram();
     void reset();
-    void addMeasure(double power);
+    void addMeasure(float power);
     long getDuration(int bucket);
-    double getConsumption(int bucket);
+    float getConsumption(int bucket);
   private:
-    int _device;
-    double _histogram[HISTOGRAM_LENGTH];// store the consumption in wh
+    float _histogram[HISTOGRAM_LENGTH];// store the consumption in wh
     long _duration[HISTOGRAM_LENGTH];   // store the duration of the bucket
     unsigned long _lastCheckTime;
 };
