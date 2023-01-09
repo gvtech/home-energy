@@ -34,7 +34,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return Errors.EMPTY_CONSUMPTIONS_LIST;
   }
 
-  // TODO: fix SK and by device query
+  // TODO: should get by specific devices
   async getAllConsumptionByDevice(deviceNumber: number): Promise<ConsumptionDao[]> {
     const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
     const parameters: DocumentClient.QueryInput = {
@@ -51,6 +51,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return (response?.Items ?? []) as ConsumptionDao[];
   }
 
+  // TODO: fix SK and by device query
   async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
     const parameters: DocumentClient.ScanInput = {
       TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),

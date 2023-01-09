@@ -4,7 +4,6 @@
  */
 import { describe, expect, test } from '@jest/globals';
 import { getMessageFromJSONResponse } from '@libs/adapter/aws/api-gateway';
-import { fakeConsomption } from '@libs/tests/fake';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
 import { Errors } from '@libs/utils/errors';
 import { StatusCodes } from 'http-status-codes';
@@ -18,40 +17,36 @@ describe('getAllConsumption unit', () => {
   });
 
   beforeEach(() => {
-    dynamoDb.query.mockImplementation(async () => {});
+    dynamoDb.scan.mockImplementation(async () => {});
   });
 
   afterAll(() => {
     restoreDynamoDb();
   });
 
-  test('Should getAllConsumption by deviceNumber', async () => {
+  test('Should getAll consumptions', async () => {
     // Given
     // When
     const event = generateValidatedAPIGatewayProxyEvent({
       queryStringParameters: {
-        deviceNumber: '1',
+        startDate: '2022-12-30T18:29:28.225Z',
       },
     });
     const response = await executeLambda(main, event);
 
     // Then
     expect(response.statusCode).toEqual(StatusCodes.OK);
-    expect(dynamoDb.query.mock.calls[0][0]).toEqual({
+    expect(dynamoDb.scan.mock.calls[0][0]).toEqual({
       ExpressionAttributeValues: expect.any(Object),
-      KeyConditionExpression: expect.any(String),
+      FilterExpression: 'consumptionDate > :startDate',
       TableName: 'HOME_ENERGY_DYNAMODB_TABLE_IS_MISSING_FROM_ENV',
     });
   });
 
   test('Should throw 400 BAD_REQUEST ParametersNotProvided', async () => {
     // Given
-    const consomption = fakeConsomption();
-
     // When
-    const event = generateValidatedAPIGatewayProxyEvent({
-      body: JSON.stringify(consomption),
-    });
+    const event = generateValidatedAPIGatewayProxyEvent({});
     const response = await executeLambda(main, event);
 
     // Then

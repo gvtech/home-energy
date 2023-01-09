@@ -10,18 +10,18 @@ import { logger } from '@libs/utils/logger';
 
 export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
   try {
-    const deviceNumber = event.queryStringParameters?.deviceNumber;
+    // const deviceNumber = event.queryStringParameters?.deviceNumber;
     const startDate = event.queryStringParameters?.startDate;
     const endDate = event.queryStringParameters?.endDate;
-    if (!deviceNumber && !startDate && !endDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.PARAMETERS_NOT_PROVIDED);
+    if (!startDate && !endDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.PARAMETERS_NOT_PROVIDED);
 
-    logger.info({ deviceNumber, startDate, endDate }, 'getAllConsumption queryStringParameters');
+    logger.info({ startDate, endDate }, 'getAllConsumption queryStringParameters');
 
-    // TODO: fix SK and by device query
-    let consumptionByDevice: ConsumptionDao[] = [];
-    if (deviceNumber) {
-      consumptionByDevice = await new ConsumptionService().getAllConsumptionByDevice(parseInt(deviceNumber));
-    }
+    // TODO: filter by devices
+    const consumptionByDevice: ConsumptionDao[] = [];
+    // if (deviceNumber) {
+    //   consumptionByDevice = await new ConsumptionService().getAllConsumptionByDevice(parseInt(deviceNumber));
+    // }
 
     let consumptionByDate: ConsumptionDao[] = [];
     if (startDate || endDate) {
