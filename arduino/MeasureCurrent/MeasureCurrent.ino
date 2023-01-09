@@ -11,51 +11,64 @@
 #include "EnergyHistogram.h"             
 
 
+const int SDchipSelect = 10;
+
 #define NBMON 5
 EnergyMonitor emon[NBMON];                   // Create an vector of monitor objects
-EnergyHistogram *energy[NBMON];
+EnergyHistogram energy[NBMON];
 int analogPorts[NBMON]={A0,A1,A2,A3,A6};    // We volontary skip the A4 and A5 port to save then for a future I2C communication 
 
 void setup()
 {  
   Serial.begin(115200);
+  Serial.setTimeout(1000);
   pinMode(LED_BUILTIN, OUTPUT);
-  for(int i=0;i<NBMON;i++) {
-    emon[i]=EnergyMonitor();
-    emon[i].current(analogPorts[i],21.1);
-    energy[i]=new EnergyHistogram(i);
+ 
+  for(int device=0;device<NBMON;device++) {
+    emon[device].current(analogPorts[device],21.1);
+    energy[device].reset();
   } 
 
 }
 
-void loop()
+void sendConsumption(String ts,int device) 
 {
-    for(int i=0;i<NBMON;i++) {
-      double Irms = emon[i].calcIrms(1000)*220.0;  // Calculate Irms for 200V
-      energy[i]->addMeasure(Irms);
-    }
-
-  if (Serial.available() > 0) {  
-    digitalWrite(LED_BUILTIN, HIGH); 
-
-    String ts=Serial.readStringUntil('\n'); // We collect the timestamp from the caller and add it in the response document
-    
-    for(int i=0;i<NBMON;i++) {
-      StaticJsonDocument<400> deviceConsumption;
+      StaticJsonDocument<200> deviceConsumption;
       deviceConsumption["consumptionDate"] = ts;
-      deviceConsumption["deviceNumber"] = i;
+      deviceConsumption["deviceNumber"] = device;
       JsonArray consumption = deviceConsumption.createNestedArray("consumption");
       JsonArray details = deviceConsumption.createNestedArray("details");
       for(int bucket=0;bucket<HISTOGRAM_LENGTH;bucket++) {
-          consumption.add(energy[i]->getConsumption(bucket));
-          details.add(energy[i]->getDuration(bucket));
+          consumption.add(energy[device].getConsumption(bucket));
+          details.add(energy[device].getDuration(bucket));
       }
-      energy[i]->reset();
+      energy[device].reset();
       serializeJson(deviceConsumption, Serial);
       Serial.println();
+      Serial.flush();
+}
+
+void loop()
+{
+    for(int device=0;device<NBMON;device++) {
+      float Irms = emon[device].calcIrms(1000)*220.0;  // Calculate Irms for 200V
+      energy[device].addMeasure(Irms);
     }
 
+  if (Serial.available() > 20) {  
+    digitalWrite(LED_BUILTIN, HIGH); 
+
+    String ts=Serial.readStringUntil('\n'); // We collect the timestamp from the caller and add it in the response document
+    if(ts.charAt(ts.length()-1)=='\r')
+            ts.setCharAt(ts.length()-1,' ');
+    if(ts.length()>20 ){
+      for(int device=0;device<NBMON;device++) { 
+        sendConsumption(ts,device);
+        delay(100); // to make sure that the ESP module has time to send the data
+      }
+    }
     Serial.println("done");
+    Serial.flush();
     digitalWrite(LED_BUILTIN, LOW); 
 
   }
