@@ -1,7 +1,13 @@
 import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/adapter/db-connect';
+import { logger } from '@libs/utils/logger';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
+export function initUnitTests(): void {
+  logger.level = 'fatal';
+}
+
 export function initAcceptanceTests(): void {
+  logger.level = 'fatal';
   process.env.OFFLINE = 'true';
 }
 

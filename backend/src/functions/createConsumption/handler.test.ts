@@ -5,6 +5,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { fakeConsomption } from '@libs/tests/fake';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
+import { initUnitTests } from '@libs/tests/utils';
 import { EDeviceType } from '@models/device.model';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
@@ -13,6 +14,7 @@ describe('createConsumption unit', () => {
   let dynamoDb: DynamoDbMock;
 
   beforeAll(() => {
+    initUnitTests();
     dynamoDb = mockDynamoDb();
   });
 

@@ -5,6 +5,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { getMessageFromJSONResponse } from '@libs/adapter/aws/api-gateway';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
+import { initUnitTests } from '@libs/tests/utils';
 import { Errors } from '@libs/utils/errors';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
@@ -13,6 +14,7 @@ describe('getAllConsumption unit', () => {
   let dynamoDb: DynamoDbMock;
 
   beforeAll(() => {
+    initUnitTests();
     dynamoDb = mockDynamoDb();
   });
 
