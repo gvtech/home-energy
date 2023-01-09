@@ -9,7 +9,6 @@ export function dynamoDBClient(): DocumentClient {
       region: 'localhost',
       endpoint: `http://localhost:8000`,
     });
-  } else {
-    return new DynamoDB.DocumentClient();
   }
+  return new DynamoDB.DocumentClient();
 }
