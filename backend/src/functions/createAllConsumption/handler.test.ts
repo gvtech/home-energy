@@ -3,7 +3,7 @@
  * @command npx sls invoke -f createAllConsumption --path src/functions/createAllConsumption/mock.json --aws-profile home
  */
 import { describe, expect, test } from '@jest/globals';
-import { generateFakeConsomption } from '@libs/tests/fake';
+import { fakeConsomption } from '@libs/tests/fake';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
 import { EDeviceType } from '@models/device.model';
 import { StatusCodes } from 'http-status-codes';
@@ -26,7 +26,7 @@ describe('createAllConsumption unit', () => {
 
   test('Should create 2 consumptions', async () => {
     // Given
-    const consumptions = [generateFakeConsomption(), generateFakeConsomption()];
+    const consumptions = [fakeConsomption(), fakeConsomption()];
 
     // When
     const event = generateValidatedAPIGatewayProxyEvent({

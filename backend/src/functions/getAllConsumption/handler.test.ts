@@ -4,7 +4,7 @@
  */
 import { describe, expect, test } from '@jest/globals';
 import { getMessageFromJSONResponse } from '@libs/adapter/aws/api-gateway';
-import { generateFakeConsomption } from '@libs/tests/fake';
+import { fakeConsomption } from '@libs/tests/fake';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
 import { Errors } from '@libs/utils/errors';
 import { StatusCodes } from 'http-status-codes';
@@ -46,7 +46,7 @@ describe('getAllConsumption unit', () => {
 
   test('Should throw 400 BAD_REQUEST ParametersNotProvided', async () => {
     // Given
-    const consomption = generateFakeConsomption();
+    const consomption = fakeConsomption();
 
     // When
     const event = generateValidatedAPIGatewayProxyEvent({

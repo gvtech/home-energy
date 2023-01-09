@@ -3,34 +3,40 @@
  * @command npx sls invoke -f createConsumption --path src/functions/createConsumption/mock.json --aws-profile home
  */
 import { describe, expect, test } from '@jest/globals';
-import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/adapter/db-connect';
-import { generateFakeConsomption } from '@libs/tests/fake';
+import { DynamodbTableNames } from '@libs/adapter/db-connect';
+import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
+import { fakeConsomption } from '@libs/tests/fake';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 
 describe('createConsumption acceptance', () => {
-  beforeAll(() => {
-    process.env.OFFLINE = 'true';
+  beforeAll(async () => {
+    initAcceptanceTests();
+  });
+
+  beforeEach(async () => {
+    await resetDynamoDbTable(DynamodbTableNames.HomeEnergy);
+  });
+
+  afterEach(async () => {
+    await resetDynamoDbTable(DynamodbTableNames.HomeEnergy);
   });
 
   test('Should create a consumption', async () => {
     // Given
-    const consumption = generateFakeConsomption();
+    const consumption = fakeConsomption();
 
     // When
     const event = generateValidatedAPIGatewayProxyEvent({
       body: JSON.stringify(consumption),
     });
     const response = await executeLambda(main, event);
-    const parameters: DocumentClient.ScanInput = {
-      TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
-    };
-    const scan = await dynamoDBClient().scan(parameters).promise();
-    console.log('DEBUG: ', scan.Count);
+    const scanConsumptions = await scanDynamoDbTable(DynamodbTableNames.HomeEnergy);
 
     // Then
     expect(response.statusCode).toEqual(StatusCodes.OK);
+    expect(scanConsumptions.Count).toEqual(1);
+    expect(scanConsumptions.Items).toEqual(expect.arrayContaining([expect.objectContaining(consumption)]));
   });
 });

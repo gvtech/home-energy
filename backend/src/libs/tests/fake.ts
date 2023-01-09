@@ -1,6 +1,6 @@
 import { ConsumptionDto } from '@models/consumption.model';
 
-export const generateFakeConsomption = (): ConsumptionDto => {
+export const fakeConsomption = (): ConsumptionDto => {
   return {
     consumptionDate: new Date().toISOString(),
     consumption: [12, 52, 89, 4654],
