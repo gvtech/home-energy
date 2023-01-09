@@ -1,8 +1,6 @@
 import pino from 'pino';
 
-export const logger = pino({
-  level: process.env.LOG_LEVEL ?? 'debug',
-});
+export const logger = pino({ level: 'info' });
 
 // Redefined console.log for external libs that have
 // the bad idea to use it

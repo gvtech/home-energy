@@ -38,7 +38,7 @@ export function generateValidatedAPIGatewayProxyEvent(event: {
 }
 
 export async function executeLambda(
-  main: Function,
+  main: (event: Partial<APIGatewayProxyEvent>, context: Context, callback: Callback) => Promise<APIGatewayProxyResult>,
   event: Partial<APIGatewayProxyEvent>,
 ): Promise<APIGatewayProxyResult> {
   return (await main(event, {} as Context, {} as Callback)) as APIGatewayProxyResult;

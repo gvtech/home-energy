@@ -10,7 +10,7 @@ export default {
     {
       http: {
         method: 'post',
-        path: getHttpRoute(Platforms.AWS, Routes.CREATEALL_CONSUMPTION),
+        path: getHttpRoute(Platforms.AWS, Routes.CREATE_ALL_CONSUMPTION),
       },
     },
   ],
