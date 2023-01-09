@@ -5,7 +5,7 @@ import { Routes } from 'src/routes';
 // TODO: add openapi
 export default {
   paths: {
-    [getHttpRoute(Platforms.AWS, Routes.HELLO)]: {
+    [getHttpRoute(Platforms.AWS, Routes.GET_ALL_CONSUMPTION)]: {
       get: {
         summary: 'hello message',
         description: 'hello message',

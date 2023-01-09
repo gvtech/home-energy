@@ -4,9 +4,9 @@
  */
 import { describe, expect, test } from '@jest/globals';
 import { DynamodbTableNames } from '@libs/adapter/db-connect';
-import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
 import { fakeConsomption } from '@libs/tests/fake';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
+import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 

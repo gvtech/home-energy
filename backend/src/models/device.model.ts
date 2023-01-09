@@ -4,7 +4,7 @@ export enum EDeviceType {
   UNKNOWN = 'unknown',
 }
 
-export const getDeviceTypeByDeviceNumber = (deviceNumber: number) => {
+export function getDeviceTypeByDeviceNumber(deviceNumber: number): EDeviceType {
   switch (deviceNumber) {
     case 1:
       return EDeviceType.OVEN;
@@ -13,4 +13,4 @@ export const getDeviceTypeByDeviceNumber = (deviceNumber: number) => {
     default:
       return EDeviceType.UNKNOWN;
   }
-};
+}

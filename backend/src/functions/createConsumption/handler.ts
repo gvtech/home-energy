@@ -5,11 +5,11 @@ import { StatusCodes } from 'http-status-codes';
 
 import { catchAWSHttpError, formatJSONResponse, getBodyFromAPIGatewayProxyEvent } from '@libs/adapter/aws/api-gateway';
 import { ConsumptionService } from '@libs/services/consumption';
+import { logger } from '@libs/utils/logger';
 import { ConsumptionDto } from '@models/consumption.model';
 import createHttpError, { HttpError } from 'http-errors';
-import { logger } from '@libs/utils/logger';
 
-export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
+export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> {
   try {
     const body = getBodyFromAPIGatewayProxyEvent<ConsumptionDto>(event);
     const consumptionDate = body?.consumptionDate;
@@ -36,4 +36,4 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
   } catch (error) {
     return catchAWSHttpError<DocumentClient.PutItemOutput>(error as HttpError, {});
   }
-};
+}

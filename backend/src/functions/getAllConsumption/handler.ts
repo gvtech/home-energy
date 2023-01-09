@@ -4,11 +4,11 @@ import { StatusCodes } from 'http-status-codes';
 import { catchAWSHttpError, formatJSONResponse } from '@libs/adapter/aws/api-gateway';
 import { ConsumptionService } from '@libs/services/consumption';
 import { Errors } from '@libs/utils/errors';
+import { logger } from '@libs/utils/logger';
 import { ConsumptionDao } from '@models/consumption.model';
 import createHttpError, { HttpError } from 'http-errors';
-import { logger } from '@libs/utils/logger';
 
-export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> => {
+export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> {
   try {
     // const deviceNumber = event.queryStringParameters?.deviceNumber;
     const startDate = event.queryStringParameters?.startDate;
@@ -22,7 +22,6 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
     // if (deviceNumber) {
     //   consumptionByDevice = await new ConsumptionService().getAllConsumptionByDevice(parseInt(deviceNumber));
     // }
-
     let consumptionByDate: ConsumptionDao[] = [];
     if (startDate || endDate) {
       consumptionByDate = await new ConsumptionService().getAllConsumptionByDate(startDate, endDate);
@@ -38,4 +37,4 @@ export const main = async (event: Partial<APIGatewayProxyEvent>): Promise<APIGat
   } catch (error) {
     return catchAWSHttpError<ConsumptionDao[]>(error as HttpError, []);
   }
-};
+}
