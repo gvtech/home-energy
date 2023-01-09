@@ -35,7 +35,11 @@ const serverlessConfiguration: AWS = {
       stages: ['${self:custom.stage}'],
       start: {
         migrate: true,
-        port: 8000,
+        protocol: 'http:',
+        host: 'localhost:8001',
+        port: 8001,
+        hostname: 'localhost',
+        pathname: '/',
       },
     },
   },

@@ -1,4 +1,4 @@
-import { dynamoDBClient, HOME_ENERGY_TABLE } from '@libs/adapter/db-connect';
+import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/adapter/db-connect';
 import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
 import { Errors } from '@libs/utils/errors';
 import { logger } from '@libs/utils/logger';
@@ -10,7 +10,7 @@ global.crypto = require('crypto');
 export class ConsumptionService implements IDynamoDbConsumption {
   async createConsumptionForAnHour(consumption: ConsumptionDto): Promise<DocumentClient.PutItemOutput> {
     const parameters: DocumentClient.PutItemInput = {
-      TableName: HOME_ENERGY_TABLE,
+      TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
       Item: this.buildConsumptionDao(consumption),
     };
 
@@ -23,7 +23,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
     if (consumptions) {
       const parameters: DocumentClient.BatchWriteItemInput = {
         RequestItems: {
-          [HOME_ENERGY_TABLE]: this.buildBatchWriteConsumptions(consumptions),
+          [getDynamoDBTableName(DynamodbTableNames.HomeEnergy)]: this.buildBatchWriteConsumptions(consumptions),
         },
       };
 
@@ -38,7 +38,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
   async getAllConsumptionByDevice(deviceNumber: number): Promise<ConsumptionDao[]> {
     const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
     const parameters: DocumentClient.QueryInput = {
-      TableName: HOME_ENERGY_TABLE,
+      TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
       KeyConditionExpression: 'begins_with(PK, :PK) AND SK = :SK',
       ExpressionAttributeValues: {
         ':PK': `CONSUMPTION#`,
@@ -53,7 +53,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
 
   async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
     const parameters: DocumentClient.ScanInput = {
-      TableName: HOME_ENERGY_TABLE,
+      TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
       FilterExpression: this.getConsumptionByDateFilterExpression(startDate, endDate),
       ExpressionAttributeValues: {
         ':startDate': startDate,
