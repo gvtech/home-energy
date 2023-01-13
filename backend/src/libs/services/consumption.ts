@@ -19,7 +19,6 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
-  // TODO: Add transactions on batch
   async createAllConsumptionForAnHour(consumptions: ConsumptionDto[]): Promise<DocumentClient.BatchWriteItemOutput | Errors> {
     if (consumptions) {
       const parameters: DocumentClient.BatchWriteItemInput = {

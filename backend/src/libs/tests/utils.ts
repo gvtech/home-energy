@@ -2,12 +2,12 @@ import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/
 import { logger } from '@libs/utils/logger';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
-export function initUnitTests(): void {
-  logger.level = 'fatal';
+export function initUnitTests({ debug }: { debug: boolean }): void {
+  logger.level = debug ? 'info' : 'fatal';
 }
 
-export function initAcceptanceTests(): void {
-  logger.level = 'fatal';
+export function initAcceptanceTests({ debug }: { debug: boolean }): void {
+  logger.level = debug ? 'info' : 'fatal';
   process.env.OFFLINE = 'true';
 }
 

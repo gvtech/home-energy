@@ -14,7 +14,7 @@ describe('createAllConsumption unit', () => {
   let dynamoDb: DynamoDbMock;
 
   beforeAll(() => {
-    initUnitTests();
+    initUnitTests({ debug: false });
     dynamoDb = mockDynamoDb();
   });
 

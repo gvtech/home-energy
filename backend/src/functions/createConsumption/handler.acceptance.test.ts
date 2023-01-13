@@ -12,7 +12,7 @@ import { main } from './handler';
 
 describe('createConsumption acceptance', () => {
   beforeAll(async () => {
-    initAcceptanceTests();
+    initAcceptanceTests({ debug: false });
   });
 
   beforeEach(async () => {
