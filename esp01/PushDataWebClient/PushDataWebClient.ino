@@ -18,12 +18,10 @@ ESP8266WiFiMulti WiFiMulti;
 
 BearSSL::WiFiClientSecure *client;
 
-String lastRun="";
-
 void setup() {
 
   Serial.begin(115200);
-  Serial.setTimeout(1000);
+  Serial.setTimeout(2000);
   WiFi.mode(WIFI_STA);
   WiFiMulti.addAP(WIFI_SSID, WIFI_PSW);
 
@@ -37,6 +35,7 @@ bool sendTime(BearSSL::WiFiClientSecure *client) {
           String json = https.getString();
           StaticJsonDocument<200> doc;
           DeserializationError error = deserializeJson(doc, json);
+          while(Serial.available()) Serial.read(); // make sure that all inputs are cleaned first
           const char* datetime = doc["datetime"];
           Serial.println(datetime);
           return true;
@@ -48,31 +47,10 @@ bool sendTime(BearSSL::WiFiClientSecure *client) {
 void sendConsumption(BearSSL::WiFiClientSecure *client) {
     HTTPClient https;
 
-    int retry=0;
-    int nbLines=0;
-    String dataBuffer="[";
-    while(true) {
-      if (Serial.available() > 3) {
-          String consumptionData=Serial.readStringUntil('\n');
-          if(consumptionData.startsWith("done")){
-            break;
-            }
-          else {
-            if(nbLines) dataBuffer+=",";
-            nbLines++;
-            dataBuffer+=consumptionData;
-          }
-         }
-      else {
-          retry+=1;
-          if(retry>10)  break;
-          delay(200); 
-        }
-      }
-    dataBuffer+="]";
+    String databuffer=Serial.readString(); // reads the buffer until timeout
     if (https.begin(*client, BACKEND_URL)) { 
             https.addHeader("Content-Type", "application/json");
-            int httpCode = https.POST(dataBuffer);
+            int httpCode = https.POST(databuffer);
             https.end();
             }
 }

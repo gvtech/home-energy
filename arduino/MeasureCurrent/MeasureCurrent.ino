@@ -44,8 +44,6 @@ void sendConsumption(String ts,int device)
       }
       energy[device].reset();
       serializeJson(deviceConsumption, Serial);
-      Serial.println();
-      Serial.flush();
 }
 
 void loop()
@@ -62,12 +60,14 @@ void loop()
     if(ts.charAt(ts.length()-1)=='\r')
             ts.setCharAt(ts.length()-1,' ');
     if(ts.length()>20 ){
-      for(int device=0;device<NBMON;device++) { 
-        sendConsumption(ts,device);
-        delay(100); // to make sure that the ESP module has time to send the data
-      }
+        Serial.print('[');
+        for(int device=0;device<NBMON;device++) { 
+          sendConsumption(ts,device);
+          if(device<NBMON-1)
+              Serial.print(',');
+        }
+        Serial.print(']');
     }
-    Serial.println("done");
     Serial.flush();
     digitalWrite(LED_BUILTIN, LOW); 
 
