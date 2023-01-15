@@ -10,27 +10,23 @@ import createHttpError, { HttpError } from 'http-errors';
 
 export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> {
   try {
-    // const deviceNumber = event.queryStringParameters?.deviceNumber;
+    const deviceNumber = event.queryStringParameters?.deviceNumber;
     const startDate = event.queryStringParameters?.startDate;
     const endDate = event.queryStringParameters?.endDate;
-    if (!startDate && !endDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.PARAMETERS_NOT_PROVIDED);
+    if (!deviceNumber && !startDate && !endDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.PARAMETERS_NOT_PROVIDED);
 
-    logger.info({ startDate, endDate }, 'getAllConsumption queryStringParameters');
+    logger.info({ deviceNumber, startDate, endDate }, 'getAllConsumption queryStringParameters');
 
-    // TODO: filter by devices
-    const consumptionByDevice: ConsumptionDao[] = [];
-    // if (deviceNumber) {
-    //   consumptionByDevice = await new ConsumptionService().getAllConsumptionByDevice(parseInt(deviceNumber));
-    // }
-    let consumptionByDate: ConsumptionDao[] = [];
-    if (startDate || endDate) {
-      consumptionByDate = await new ConsumptionService().getAllConsumptionByDate(startDate, endDate);
+    let consumption: ConsumptionDao[] = [];
+    if (deviceNumber || startDate || endDate) {
+      const deviceToNumber = deviceNumber !== undefined && deviceNumber !== null ? parseInt(deviceNumber) : undefined;
+      consumption = await new ConsumptionService().getAllConsumption(deviceToNumber, startDate, endDate);
     }
 
     return formatJSONResponse<ConsumptionDao[]>(
       {
         message: 'getAllConsumptionByDate',
-        data: [...consumptionByDevice, ...consumptionByDate],
+        data: consumption,
       },
       StatusCodes.OK,
     );

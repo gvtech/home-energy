@@ -5,6 +5,7 @@ import { logger } from '@libs/utils/logger';
 import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
 import { getDeviceTypeByDeviceNumber } from '@models/device.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { TABLE_GSI1 } from './../adapter/db-connect';
 global.crypto = require('crypto');
 
 export class ConsumptionService implements IDynamoDbConsumption {
@@ -19,7 +20,6 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return response;
   }
 
-  // TODO: Add transactions on batch
   async createAllConsumptionForAnHour(consumptions: ConsumptionDto[]): Promise<DocumentClient.BatchWriteItemOutput | Errors> {
     if (consumptions) {
       const parameters: DocumentClient.BatchWriteItemInput = {
@@ -35,35 +35,20 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return Errors.EMPTY_CONSUMPTIONS_LIST;
   }
 
-  // TODO: should get by specific devices
-  async getAllConsumptionByDevice(deviceNumber: number): Promise<ConsumptionDao[]> {
-    const deviceType = getDeviceTypeByDeviceNumber(deviceNumber);
+  async getAllConsumption(
+    deviceNumber: number | undefined,
+    startDate: string | undefined,
+    endDate: string | undefined,
+  ): Promise<ConsumptionDao[]> {
     const parameters: DocumentClient.QueryInput = {
       TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
-      KeyConditionExpression: 'begins_with(PK, :PK) AND SK = :SK',
-      ExpressionAttributeValues: {
-        ':PK': `CONSUMPTION#`,
-        ':SK': `CONSUMPTION#${deviceType}`,
-      },
+      IndexName: TABLE_GSI1,
+      KeyConditionExpression: 'GSI1PK = :GSI1PK',
+      FilterExpression: this.getAllConsumptionFilterExpression(deviceNumber, startDate, endDate),
+      ExpressionAttributeValues: this.getAllConsumptionExpressionAttributeValues(deviceNumber, startDate, endDate),
     };
 
     const response = await dynamoDBClient().query(parameters).promise();
-    logger.info({ response }, 'getAll consumption');
-    return (response?.Items ?? []) as ConsumptionDao[];
-  }
-
-  // TODO: fix SK and by device query
-  async getAllConsumptionByDate(startDate: string | undefined, endDate: string | undefined): Promise<ConsumptionDao[]> {
-    const parameters: DocumentClient.ScanInput = {
-      TableName: getDynamoDBTableName(DynamodbTableNames.HomeEnergy),
-      FilterExpression: this.getConsumptionByDateFilterExpression(startDate, endDate),
-      ExpressionAttributeValues: {
-        ':startDate': startDate,
-        ':endDate': endDate,
-      },
-    };
-
-    const response = await dynamoDBClient().scan(parameters).promise();
     logger.info({ response }, 'getAll consumption');
     return (response?.Items ?? []) as ConsumptionDao[];
   }
@@ -74,7 +59,9 @@ export class ConsumptionService implements IDynamoDbConsumption {
     const deviceType = getDeviceTypeByDeviceNumber(consumption.deviceNumber);
     return {
       PK: `CONSUMPTION#${uuid}`,
-      SK: `CONSUMPTION#${deviceType}`,
+      SK: `CONSUMPTION#`,
+      GSI1PK: `CONSUMPTIONFILTER#`,
+      GSI1SK: `CONSUMPTIONFILTER#${consumption.consumptionDate}#${deviceType}`,
       id: uuid,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -95,14 +82,41 @@ export class ConsumptionService implements IDynamoDbConsumption {
     return items;
   }
 
-  private getConsumptionByDateFilterExpression(startDate: string | undefined, endDate: string | undefined): string {
+  private getAllConsumptionFilterExpression(
+    deviceNumber: number | undefined,
+    startDate: string | undefined,
+    endDate: string | undefined,
+  ): string {
+    const deviceTypeExpression = deviceNumber ? ' AND deviceType = :deviceType' : '';
     if (startDate && endDate) {
-      return 'consumptionDate BETWEEN :startDate and :endDate';
+      return `consumptionDate BETWEEN :startDate and :endDate${deviceTypeExpression}`;
     } else if (startDate) {
-      return 'consumptionDate > :startDate';
+      return `consumptionDate > :startDate${deviceTypeExpression}`;
     } else if (endDate) {
-      return 'consumptionDate < :endDate';
+      return `consumptionDate < :endDate${deviceTypeExpression}`;
+    } else if (deviceNumber) {
+      return `deviceType = :deviceType`;
     }
     return '';
+  }
+
+  private getAllConsumptionExpressionAttributeValues(
+    deviceNumber: number | undefined,
+    startDate: string | undefined,
+    endDate: string | undefined,
+  ): DocumentClient.QueryInput['ExpressionAttributeValues'] {
+    const expressionAttributeValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {
+      ':GSI1PK': `CONSUMPTIONFILTER#`
+    };
+    if (deviceNumber) {
+      expressionAttributeValues[':deviceType'] = getDeviceTypeByDeviceNumber(deviceNumber);
+    }
+    if (startDate) {
+      expressionAttributeValues[':startDate'] = startDate;
+    }
+    if (endDate) {
+      expressionAttributeValues[':endDate'] = endDate;
+    }
+    return expressionAttributeValues;
   }
 }

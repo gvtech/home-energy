@@ -8,13 +8,14 @@ import { DynamodbTableNames } from '@libs/adapter/db-connect';
 import { fakeConsomption } from '@libs/tests/fake';
 import { generateConsumption } from '@libs/tests/generate';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
-import { initAcceptanceTests, resetDynamoDbTable } from '@libs/tests/utils';
+import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
+import { logger } from '@libs/utils/logger';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 
 describe('getAllConsumption acceptance', () => {
   beforeAll(async () => {
-    initAcceptanceTests();
+    initAcceptanceTests({ debug: false });
   });
 
   beforeEach(async () => {
@@ -25,7 +26,7 @@ describe('getAllConsumption acceptance', () => {
     await resetDynamoDbTable(DynamodbTableNames.HomeEnergy);
   });
 
-  test('Should getAll consumptions', async () => {
+  test('Should getAllConsumption', async () => {
     // Given
     const consumption1 = await generateConsumption();
     const consumption2 = await generateConsumption();
@@ -46,7 +47,7 @@ describe('getAllConsumption acceptance', () => {
     );
   });
 
-  test('Should getAll consumption from after a specific date', async () => {
+  test('Should getAll consumptions from after a specific date', async () => {
     // Given
     const consumption1 = await generateConsumption();
     const consumption2 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-12-30T17:29:28.225Z' }));
@@ -74,7 +75,7 @@ describe('getAllConsumption acceptance', () => {
     );
   });
 
-  test('Should getAll consumption from before a specific date', async () => {
+  test('Should getAll consumptions from before a specific date', async () => {
     // Given
     const consumption1 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-12-30T17:29:28.225Z' }));
     const consumption2 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-11-30T17:29:28.225Z' }));
@@ -103,7 +104,7 @@ describe('getAllConsumption acceptance', () => {
     );
   });
 
-  test('Should getAll consumption from between 2 specific date', async () => {
+  test('Should getAll consumptions from between 2 specific date', async () => {
     // Given
     const consumption1 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-12-30T17:29:28.225Z' }));
     const consumption2 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-11-30T17:29:28.225Z' }));
@@ -116,6 +117,56 @@ describe('getAllConsumption acceptance', () => {
       queryStringParameters: {
         startDate: '2022-11-18T17:29:28.225Z',
         endDate: '2022-12-30T18:29:28.225Z',
+      },
+    });
+    const response = await executeLambda(main, event);
+
+    // Then
+    expect(response.statusCode).toEqual(StatusCodes.OK);
+    expect(getDataFromJSONResponse(response)).toHaveLength(2);
+    expect(getDataFromJSONResponse(response)).toEqual(
+      expect.arrayContaining([expect.objectContaining(consumption1), expect.objectContaining(consumption2)]),
+    );
+  });
+
+  test('Should getAll consumptions from between 2 specific date by device', async () => {
+    // Given
+    const consumption1 = await generateConsumption(fakeConsomption({ consumptionDate: '2022-12-30T17:29:28.225Z', deviceNumber: 2 }));
+    await generateConsumption(fakeConsomption({ consumptionDate: '2022-11-30T17:29:28.225Z' }));
+    await generateConsumption(fakeConsomption({ consumptionDate: '2022-11-15T17:29:28.225Z', deviceNumber: 2 }));
+    await generateConsumption(fakeConsomption({ consumptionDate: '2021-11-30T17:29:28.225Z' }));
+    await generateConsumption();
+
+    // When
+    const event = generateValidatedAPIGatewayProxyEvent({
+      queryStringParameters: {
+        startDate: '2022-11-18T17:29:28.225Z',
+        endDate: '2022-12-30T18:29:28.225Z',
+        deviceNumber: '2',
+      },
+    });
+    const response = await executeLambda(main, event);
+
+    // Then
+    expect(response.statusCode).toEqual(StatusCodes.OK);
+    expect(getDataFromJSONResponse(response)).toHaveLength(1);
+    expect(getDataFromJSONResponse(response)).toEqual(expect.arrayContaining([expect.objectContaining(consumption1)]));
+  });
+
+  test('Should getAll consumptions by device', async () => {
+    // Given
+    const consumption1 = await generateConsumption(fakeConsomption({ deviceNumber: 2 }));
+    const consumption2 = await generateConsumption(fakeConsomption({ deviceNumber: 2 }));
+    await generateConsumption();
+    await generateConsumption();
+    const scanConsumptions = await scanDynamoDbTable(DynamodbTableNames.HomeEnergy);
+    logger.info(scanConsumptions.Items?.[0].PK);
+    logger.info(scanConsumptions.Items?.[0].SK);
+
+    // When
+    const event = generateValidatedAPIGatewayProxyEvent({
+      queryStringParameters: {
+        deviceNumber: '2',
       },
     });
     const response = await executeLambda(main, event);

@@ -12,7 +12,7 @@ import { main } from './handler';
 
 describe('createConsumption acceptance', () => {
   beforeAll(async () => {
-    initAcceptanceTests();
+    initAcceptanceTests({ debug: false });
   });
 
   beforeEach(async () => {
@@ -23,7 +23,7 @@ describe('createConsumption acceptance', () => {
     await resetDynamoDbTable(DynamodbTableNames.HomeEnergy);
   });
 
-  test('Should create a consumption', async () => {
+  test('Should createConsumption', async () => {
     // Given
     const consumption = fakeConsomption();
 

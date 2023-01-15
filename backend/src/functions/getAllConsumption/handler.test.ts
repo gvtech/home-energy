@@ -14,19 +14,19 @@ describe('getAllConsumption unit', () => {
   let dynamoDb: DynamoDbMock;
 
   beforeAll(() => {
-    initUnitTests();
+    initUnitTests({ debug: false });
     dynamoDb = mockDynamoDb();
   });
 
   beforeEach(() => {
-    dynamoDb.scan.mockImplementation(async () => {});
+    dynamoDb.query.mockImplementation(async () => {});
   });
 
   afterAll(() => {
     restoreDynamoDb();
   });
 
-  test('Should getAll consumptions', async () => {
+  test('Should getAllConsumption', async () => {
     // Given
     // When
     const event = generateValidatedAPIGatewayProxyEvent({
@@ -38,9 +38,11 @@ describe('getAllConsumption unit', () => {
 
     // Then
     expect(response.statusCode).toEqual(StatusCodes.OK);
-    expect(dynamoDb.scan.mock.calls[0][0]).toEqual({
+    expect(dynamoDb.query.mock.calls[0][0]).toEqual({
       ExpressionAttributeValues: expect.any(Object),
       FilterExpression: 'consumptionDate > :startDate',
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :GSI1PK',
       TableName: 'HOME_ENERGY_DYNAMODB_TABLE_IS_MISSING_FROM_ENV',
     });
   });
