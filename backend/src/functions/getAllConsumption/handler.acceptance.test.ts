@@ -8,13 +8,14 @@ import { DynamodbTableNames } from '@libs/adapter/db-connect';
 import { fakeConsomption } from '@libs/tests/fake';
 import { generateConsumption } from '@libs/tests/generate';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
-import { initAcceptanceTests, resetDynamoDbTable } from '@libs/tests/utils';
+import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
+import { logger } from '@libs/utils/logger';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 
 describe('getAllConsumption acceptance', () => {
   beforeAll(async () => {
-    initAcceptanceTests({ debug: true });
+    initAcceptanceTests({ debug: false });
   });
 
   beforeEach(async () => {
@@ -25,7 +26,7 @@ describe('getAllConsumption acceptance', () => {
     await resetDynamoDbTable(DynamodbTableNames.HomeEnergy);
   });
 
-  test('Should getAll consumptions', async () => {
+  test('Should getAllConsumption', async () => {
     // Given
     const consumption1 = await generateConsumption();
     const consumption2 = await generateConsumption();
@@ -149,7 +150,7 @@ describe('getAllConsumption acceptance', () => {
     // Then
     expect(response.statusCode).toEqual(StatusCodes.OK);
     expect(getDataFromJSONResponse(response)).toHaveLength(1);
-    expect(getDataFromJSONResponse(response)).toEqual(expect.arrayContaining([consumption1]));
+    expect(getDataFromJSONResponse(response)).toEqual(expect.arrayContaining([expect.objectContaining(consumption1)]));
   });
 
   test('Should getAll consumptions by device', async () => {
@@ -158,6 +159,9 @@ describe('getAllConsumption acceptance', () => {
     const consumption2 = await generateConsumption(fakeConsomption({ deviceNumber: 2 }));
     await generateConsumption();
     await generateConsumption();
+    const scanConsumptions = await scanDynamoDbTable(DynamodbTableNames.HomeEnergy);
+    logger.info(scanConsumptions.Items?.[0].PK);
+    logger.info(scanConsumptions.Items?.[0].SK);
 
     // When
     const event = generateValidatedAPIGatewayProxyEvent({

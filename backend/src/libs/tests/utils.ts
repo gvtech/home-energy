@@ -3,11 +3,11 @@ import { logger } from '@libs/utils/logger';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
 export function initUnitTests({ debug }: { debug: boolean }): void {
-  logger.level = debug ? 'info' : 'fatal';
+  logger.level = debug ? 'debug' : 'fatal';
 }
 
 export function initAcceptanceTests({ debug }: { debug: boolean }): void {
-  logger.level = debug ? 'info' : 'fatal';
+  logger.level = debug ? 'debug' : 'fatal';
   process.env.OFFLINE = 'true';
 }
 

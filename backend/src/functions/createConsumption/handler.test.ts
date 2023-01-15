@@ -43,6 +43,8 @@ describe('createConsumption unit', () => {
         ...consumption,
         PK: expect.any(String),
         SK: expect.any(String),
+        GSI1PK: expect.any(String),
+        GSI1SK: expect.any(String),
         createdAt: expect.any(String),
         id: expect.any(String),
         updatedAt: expect.any(String),

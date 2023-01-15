@@ -3,6 +3,8 @@ import { EDeviceType } from './device.model';
 export type ConsumptionDao = {
   PK: string;
   SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
   id: string;
   createdAt: string;
   updatedAt: string;
