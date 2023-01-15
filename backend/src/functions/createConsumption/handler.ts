@@ -18,7 +18,7 @@ export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGat
     const details = body?.details;
     if (!consumptionDate) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.CONSUMPTION_DATE_NOT_PROVIDED);
     if (!consumption) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.CONSUMPTION_NOT_PROVIDED);
-    if (deviceNumber === undefined && deviceNumber === null)
+    if (deviceNumber === undefined || deviceNumber === null)
       throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DEVICE_NUMBER_NOT_PROVIDED);
     if (!details) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DETAILS_NOT_PROVIDED);
 
