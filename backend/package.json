@@ -16,7 +16,7 @@
     "unit": "jest --group=unit",
     "acceptance": "jest --group=acceptance --maxWorkers=1",
     "openapi": "ts-node openapi/generate-openapi.ts openapi/dist",
-    "sdk": "npm run openapi && npx @openapitools/openapi-generator-cli generate -i openapi/dist/openapi.json -g typescript-node -o openapi/dist/api-sdk -c openapi/config.json",
+    "sdk": "npm run openapi && npx @openapitools/openapi-generator-cli generate -i openapi/dist/openapi.json -g python -o ../analysis/api-sdk -c openapi/config.json",
     "db": "sls dynamodb start",
     "install:db": "sls dynamodb install"
   },
@@ -51,7 +51,7 @@
     "jest": "^29.3.1",
     "jest-junit": "^15.0.0",
     "jest-runner-groups": "^2.2.0",
-    "json-schema-to-ts": "^2.5.5",
+    "json-schema-to-ts": "^2.6.2",
     "nodemon": "^2.0.20",
     "serverless": "^3.22.0",
     "serverless-deployment-bucket": "^1.6.0",

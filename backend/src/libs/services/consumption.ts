@@ -62,7 +62,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
       SK: `CONSUMPTION#`,
       GSI1PK: `CONSUMPTIONFILTER#`,
       GSI1SK: `CONSUMPTIONFILTER#${consumption.consumptionDate}#${deviceType}`,
-      id: uuid,
+      consumptionId: uuid,
       createdAt: timestamp,
       updatedAt: timestamp,
       deviceType,

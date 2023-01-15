@@ -1,24 +1,23 @@
+import { DynamoDbSchema } from '@libs/adapter/dynamodb/schemas';
+import ConsumptionSchema from '@schemas/consumption.schema';
+import { FromSchema } from 'json-schema-to-ts';
+import { ConsumptionDate, Uuid } from './adapter.model';
 import { DeviceType } from './device.model';
 
 export type ConsumptionDao = {
-  PK: string;
-  SK: string;
-  GSI1PK: string;
-  GSI1SK: string;
-  id: string;
+  PK: DynamoDbSchema['consumption']['PK'];
+  SK: DynamoDbSchema['consumption']['SK'];
+  GSI1PK: DynamoDbSchema['consumption']['GSI1PK'];
+  GSI1SK: DynamoDbSchema['consumption']['GSI1SK'];
+  consumptionId: Uuid;
   createdAt: string;
   updatedAt: string;
   deviceType: DeviceType;
 
-  consumptionDate: string;
+  consumptionDate: ConsumptionDate;
   consumption: number[];
   deviceNumber: number;
-  details: object[];
+  details: unknown[];
 };
 
-export type ConsumptionDto = {
-  consumptionDate: string;
-  consumption: number[];
-  deviceNumber: number;
-  details: object[];
-};
+export type ConsumptionDto = FromSchema<typeof ConsumptionSchema>;
