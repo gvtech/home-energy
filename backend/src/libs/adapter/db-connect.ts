@@ -1,13 +1,6 @@
+import { DynamodbTableNames } from '@models/adapter.model';
 import { DynamoDB } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-
-export enum DynamodbTableNames {
-  HomeEnergy = 'home-energy',
-}
-
-export const TABLE_GSI1 = 'GSI1';
-export const TABLE_GSI2 = 'GSI2';
-export const TABLE_GSI3 = 'GSI3';
 
 export function getDynamoDBTableName(tableName: DynamodbTableNames): string {
   const tableNameErrorMessage = tableName.toUpperCase().replace(/-/g, '_');

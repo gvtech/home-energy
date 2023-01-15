@@ -1,4 +1,4 @@
-import { EDeviceType } from './device.model';
+import { DeviceType } from './device.model';
 
 export type ConsumptionDao = {
   PK: string;
@@ -8,7 +8,7 @@ export type ConsumptionDao = {
   id: string;
   createdAt: string;
   updatedAt: string;
-  deviceType: EDeviceType;
+  deviceType: DeviceType;
 
   consumptionDate: string;
   consumption: number[];
