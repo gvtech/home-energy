@@ -14,7 +14,7 @@ export default {
     '@functions/(.*)': '<rootDir>/src/functions/$1',
     '@libs/(.*)': '<rootDir>/src/libs/$1',
     '@models/(.*)': '<rootDir>/src/models/$1',
-    '@templates/(.*)': '<rootDir>/src/templates/$1',
+    '@schemas/(.*)': '<rootDir>/src/schemas/$1',
   },
   reporters: ['default', 'jest-junit'],
   roots: ['<rootDir>'],

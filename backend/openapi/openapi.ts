@@ -1,6 +1,13 @@
 import merge from 'lodash';
 
-import hello from '@functions/hello/openapi';
+// Functions
+// import createAllConsumption from '@functions/createAllConsumption/openapi';
+import createConsumption from '@functions/createConsumption/openapi';
+// import getAllConsumption from '@functions/getAllConsumption/openapi';
+
+// Schemas
+import ConsumptionSchema from '@schemas/consumption.schema';
+import ConsumptionsSchema from '@schemas/consumptions.schema';
 
 export default merge({
   openapi: '3.0.0',
@@ -15,4 +22,11 @@ export default merge({
       description: 'API access through API Gateway direct domain',
     },
   ],
-}).merge(hello);
+  components: {
+    schemas: {
+      ConsumptionSchema,
+      ConsumptionsSchema,
+    },
+  },
+}).merge(createConsumption);
+// }).merge(createAllConsumption, createConsumption, getAllConsumption);

@@ -1,38 +1,33 @@
-import { getHttpRoute } from '@libs/adapter/api-gateway';
-import { Platforms } from '@models/adapter.model';
+import { generatePathParameterConfig, getDescription, getServiceTag } from '@libs/adapter/openapi';
+import { getCurrentFolderName, getCurrentFolderPath } from '@libs/utils/handler-resolver';
+import { StatusCodes } from 'http-status-codes';
 import { Routes } from 'src/routes';
 
-// TODO: add openapi
+import index from './index';
+
+const route: Routes = index.events[0].http.path as Routes;
+const folderPath = getCurrentFolderPath(__dirname);
+
 export default {
   paths: {
-    [getHttpRoute(Platforms.AWS, Routes.GET_ALL_CONSUMPTION)]: {
+    [route]: {
       get: {
-        summary: 'hello message',
-        description: 'hello message',
-        operationId: 'hello',
-        tags: ['userAPI'],
-        parameters: [
-          {
-            name: 'message',
-            in: 'path',
-            required: true,
-            description: 'message',
-            schema: {
-              type: 'string',
-            },
-          },
-        ],
+        ...getDescription(folderPath),
+        tags: [getServiceTag()],
+        parameters: [...generatePathParameterConfig(route)],
         responses: {
-          '200': {
-            description: 'hello',
+          [StatusCodes.OK]: {
+            description: getCurrentFolderName(folderPath),
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
-                  title: 'display message',
+                  title: 'consumption', // Function type name
                   properties: {
                     message: { type: 'string' },
-                    data: { type: 'string' },
+                    data: {
+                      $ref: '#/components/schemas/ConsumptionSchema',
+                    },
                   },
                   required: ['data'],
                 },

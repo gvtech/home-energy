@@ -8,7 +8,7 @@ import { fakeConsomption } from '@libs/tests/fake';
 import { DynamoDbMock, executeLambda, generateValidatedAPIGatewayProxyEvent, mockDynamoDb, restoreDynamoDb } from '@libs/tests/mocks';
 import { initUnitTests } from '@libs/tests/utils';
 import { Errors } from '@libs/utils/errors';
-import { EDeviceType } from '@models/device.model';
+import { DeviceType } from '@models/device.model';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 
@@ -52,9 +52,9 @@ describe('createAllConsumption unit', () => {
                 GSI1PK: expect.any(String),
                 GSI1SK: expect.any(String),
                 createdAt: expect.any(String),
-                id: expect.any(String),
+                consumptionId: expect.any(String),
                 updatedAt: expect.any(String),
-                deviceType: EDeviceType.OVEN,
+                deviceType: DeviceType.OVEN,
               },
             },
           },
@@ -67,9 +67,9 @@ describe('createAllConsumption unit', () => {
                 GSI1PK: expect.any(String),
                 GSI1SK: expect.any(String),
                 createdAt: expect.any(String),
-                id: expect.any(String),
+                consumptionId: expect.any(String),
                 updatedAt: expect.any(String),
-                deviceType: EDeviceType.OVEN,
+                deviceType: DeviceType.OVEN,
               },
             },
           },

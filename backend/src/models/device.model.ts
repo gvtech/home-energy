@@ -1,16 +1,16 @@
-export enum EDeviceType {
+export enum DeviceType {
   OVEN = 'oven',
   WASHING_MACHINE = 'washingMachine',
   UNKNOWN = 'unknown',
 }
 
-export function getDeviceTypeByDeviceNumber(deviceNumber: number): EDeviceType {
+export function getDeviceTypeByDeviceNumber(deviceNumber: number): DeviceType {
   switch (deviceNumber) {
     case 1:
-      return EDeviceType.OVEN;
+      return DeviceType.OVEN;
     case 2:
-      return EDeviceType.WASHING_MACHINE;
+      return DeviceType.WASHING_MACHINE;
     default:
-      return EDeviceType.UNKNOWN;
+      return DeviceType.UNKNOWN;
   }
 }

@@ -1,11 +1,11 @@
-import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/adapter/db-connect';
+import { dynamoDBClient, getDynamoDBTableName } from '@libs/adapter/db-connect';
 import { IDynamoDbConsumption } from '@libs/adapter/dynamodb/interfaces';
 import { Errors } from '@libs/utils/errors';
 import { logger } from '@libs/utils/logger';
+import { DynamodbTableNames, TABLE_GSI1 } from '@models/adapter.model';
 import { ConsumptionDao, ConsumptionDto } from '@models/consumption.model';
 import { getDeviceTypeByDeviceNumber } from '@models/device.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { TABLE_GSI1 } from './../adapter/db-connect';
 global.crypto = require('crypto');
 
 export class ConsumptionService implements IDynamoDbConsumption {
@@ -62,7 +62,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
       SK: `CONSUMPTION#`,
       GSI1PK: `CONSUMPTIONFILTER#`,
       GSI1SK: `CONSUMPTIONFILTER#${consumption.consumptionDate}#${deviceType}`,
-      id: uuid,
+      consumptionId: uuid,
       createdAt: timestamp,
       updatedAt: timestamp,
       deviceType,
@@ -106,7 +106,7 @@ export class ConsumptionService implements IDynamoDbConsumption {
     endDate: string | undefined,
   ): DocumentClient.QueryInput['ExpressionAttributeValues'] {
     const expressionAttributeValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {
-      ':GSI1PK': `CONSUMPTIONFILTER#`
+      ':GSI1PK': `CONSUMPTIONFILTER#`,
     };
     if (deviceNumber) {
       expressionAttributeValues[':deviceType'] = getDeviceTypeByDeviceNumber(deviceNumber);
