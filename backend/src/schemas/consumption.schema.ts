@@ -10,7 +10,7 @@ export default {
     consumptionDate: { type: 'string', title: 'consumptionDate' },
     consumption: { type: 'array', title: 'consumption', items: { type: 'number' } },
     deviceNumber: { type: 'number', title: 'deviceNumber' },
-    details: { type: 'array', title: 'details' },
+    details: { type: 'array', title: 'details', items: {} },
   },
   required: ['consumptionDate', 'consumption', 'deviceNumber', 'details'],
 } as const;

@@ -3,10 +3,10 @@
  * @command npx sls invoke -f createAllConsumption --path src/functions/createAllConsumption/mock.json --aws-profile home
  */
 import { describe, expect, test } from '@jest/globals';
-import { DynamodbTableNames } from '@libs/adapter/db-connect';
 import { fakeConsomption } from '@libs/tests/fake';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
 import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
+import { DynamodbTableNames } from '@models/adapter.model';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 

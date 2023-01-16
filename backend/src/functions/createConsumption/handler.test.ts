@@ -48,7 +48,7 @@ describe('createConsumption unit', () => {
         GSI1PK: expect.any(String),
         GSI1SK: expect.any(String),
         createdAt: expect.any(String),
-        id: expect.any(String),
+        consumptionId: expect.any(String),
         updatedAt: expect.any(String),
         deviceType: DeviceType.OVEN,
       },

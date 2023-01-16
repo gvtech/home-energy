@@ -25,9 +25,7 @@ export default {
                   title: 'consumption', // Function type name
                   properties: {
                     message: { type: 'string' },
-                    data: {
-                      $ref: '#/components/schemas/ConsumptionSchema',
-                    },
+                    data: { type: 'string' },
                   },
                   required: ['data'],
                 },

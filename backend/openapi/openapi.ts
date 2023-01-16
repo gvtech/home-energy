@@ -7,6 +7,7 @@ import createConsumption from '@functions/createConsumption/openapi';
 
 // Schemas
 import ConsumptionSchema from '@schemas/consumption.schema';
+import ConsumptionsSchema from '@schemas/consumptions.schema';
 
 export default merge({
   openapi: '3.0.0',
@@ -23,7 +24,8 @@ export default merge({
   ],
   components: {
     schemas: {
-      ConsumptionSchema: ConsumptionSchema,
+      ConsumptionSchema,
+      ConsumptionsSchema,
     },
   },
 }).merge(createConsumption);

@@ -4,12 +4,12 @@
  */
 import { describe, expect, test } from '@jest/globals';
 import { getDataFromJSONResponse } from '@libs/adapter/aws/api-gateway';
-import { DynamodbTableNames } from '@libs/adapter/db-connect';
 import { fakeConsomption } from '@libs/tests/fake';
 import { generateConsumption } from '@libs/tests/generate';
 import { executeLambda, generateValidatedAPIGatewayProxyEvent } from '@libs/tests/mocks';
 import { initAcceptanceTests, resetDynamoDbTable, scanDynamoDbTable } from '@libs/tests/utils';
 import { logger } from '@libs/utils/logger';
+import { DynamodbTableNames } from '@models/adapter.model';
 import { StatusCodes } from 'http-status-codes';
 import { main } from './handler';
 

@@ -1,5 +1,6 @@
-import { dynamoDBClient, DynamodbTableNames, getDynamoDBTableName } from '@libs/adapter/db-connect';
+import { dynamoDBClient, getDynamoDBTableName } from '@libs/adapter/db-connect';
 import { logger } from '@libs/utils/logger';
+import { DynamodbTableNames } from '@models/adapter.model';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
 export function initUnitTests({ debug }: { debug: boolean }): void {
