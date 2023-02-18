@@ -1,4 +1,4 @@
-import { Errors } from '@libs/utils/errors';
+import { Errors, isJsonObjectCorrect } from '@libs/utils/errors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { StatusCodes } from 'http-status-codes';
@@ -12,6 +12,7 @@ import createHttpError, { HttpError } from 'http-errors';
 export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGatewayProxyResult> {
   try {
     const body = getBodyFromAPIGatewayProxyEvent<ConsumptionDto[]>(event);
+    if (!isJsonObjectCorrect(event.body ?? '')) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.JSON_OBJECT_ERROR);
     for (const item of body ?? []) {
       const consumptionDate = item?.consumptionDate;
       const consumption = item?.consumption;
@@ -24,7 +25,7 @@ export async function main(event: Partial<APIGatewayProxyEvent>): Promise<APIGat
       if (!details) throw createHttpError(StatusCodes.BAD_REQUEST, Errors.DETAILS_NOT_PROVIDED);
     }
 
-    logger.info({ body }, 'createConsumption body');
+    logger.info({ body }, 'createAllConsumption body');
 
     const response = await new ConsumptionService().createAllConsumptionForAnHour(body ?? []);
 

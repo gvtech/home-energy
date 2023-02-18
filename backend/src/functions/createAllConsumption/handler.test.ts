@@ -137,4 +137,22 @@ describe('createAllConsumption unit', () => {
     expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
     expect(getMessageFromJSONResponse(response)).toEqual(Errors.DETAILS_NOT_PROVIDED);
   });
+
+  test('Should throw 400 BAD_REQUEST JsonObjectError', async () => {
+    // 'requestItems' failed to satisfy constraint:
+    // Map value must satisfy constraint:
+    // [Member must have length less than or equal to 25, Member must have length greater than or equal to 1]"
+    // Given
+    const consumptions = `${fakeConsomption()}${fakeConsomption()}`;
+
+    // When
+    const event = generateValidatedAPIGatewayProxyEvent({
+      body: consumptions,
+    });
+    const response = await executeLambda(main, event);
+
+    // Then
+    expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+    expect(getMessageFromJSONResponse(response)).toEqual(Errors.JSON_OBJECT_ERROR);
+  });
 });
